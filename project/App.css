@@ -1,0 +1,78 @@
+body {
+  margin: 0;
+}
+
+#root {
+  width: 98vw;
+  height: 98vh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  --height-of-header: 80px;
+  --paddings-in-tasklist: 20px;
+  --height-of-task-wrapper: 100px;
+  --height-of-task-description: 120px;
+}
+
+* {
+  font-family: "Winky Rough", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 1.1rem;
+  border: none;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.button {
+  height: 40px;
+  width: 100px;
+  outline-style: none;
+  border: none;
+  border-radius: 10px;
+}
+
+.button:hover {
+  filter: brightness(90%);
+}
+
+.button:active {
+  filter: brightness(50%);
+}
+
+p {
+  margin: 0;
+}
+
+.header {
+  width: 95%;
+  max-width: 1280px;
+  height: var(--height-of-header);
+  line-height: var(--height-of-header);
+  text-align: center;
+  font-size: 2em;
+}
+
+.nav {
+  width: 95%;
+  max-width: 1280px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav__button {
+  background-color: rgb(90, 90, 300);
+  color: white;
+}
+
+.nav__select {
+  width: 150px;
+  height: 40px;
+  border-radius: 10px;
+  background-color: rgb(211, 211, 230);
+  padding-inline: 10px;
+}
