@@ -5,12 +5,9 @@ import Task from './Task'
 import Modal from './Modal'
 import loadTaskListFromStorageOrCreateNewEmptyTaskList from './functions/loadTaskListFromStorageOrCreateNewEmptyTaskList'
 import makeStyleTask from './functions/makeTaskStyle'
-import changeTaskCompletedStatus from './functions/changeTaskCompletedStatus'
 import filterTasksBySelectedState from './functions/filterTasksBySelectedState'
 import createNewTaskObj from './functions/createNewTaskObj'
-import replaceEditedTask from './functions/replaceEditedTask'
 import getRandomId from './functions/getRandomId'
-import getTaskById from './functions/getTaskById'
 
 export default function App() {
 
@@ -20,7 +17,7 @@ export default function App() {
   const [selectedState, setSelectedState] = useState('ALL')
   const [isModalOpened, setIsModalOpened] = useState(false)
   const [isModalForEdit, setIsModalForEdit] = useState(false)
-  const [taskForAddOrEdit, setTaskForAddOrEdit] = useState(createNewTaskObj())
+  const [taskForAddOrEdit, setTaskForAddOrEdit] = useState({})
 
   useEffect(() => { localStorage.todo = JSON.stringify(taskList) }, [taskList])
 
@@ -33,17 +30,29 @@ export default function App() {
     isModalOpened,
     setIsModalOpened,
     isModalForEdit,
-    replaceTaskInTaskList: (name, description, deadline) => setTaskList(replaceEditedTask(taskList, name, description, deadline, taskForAddOrEdit.id)),
+    replaceTaskInTaskList: (name, description, deadline) => setTaskList(taskList.map(task => {
+      if (task.id === taskForAddOrEdit.id) {
+        return { ...task, name, description, deadline }
+      }
+      return task
+    })),
     addNewTask: (name, description, deadline) => setTaskList([...taskList, createNewTaskObj(name, description, deadline)]),
     nameForEdit: taskForAddOrEdit.name,
     descriptionForEdit: taskForAddOrEdit.description,
     deadlineForEdit: taskForAddOrEdit.deadline,
   }
 
+
+
   const propsForTask = {
     deleteTask: id => setTaskList(taskList.filter(task => task.id !== id)),
-    completeTask: id => setTaskList(changeTaskCompletedStatus(id, taskList)),
-    openModalForEdit: id => { setTaskForAddOrEdit(getTaskById(taskList, id)), setIsModalForEdit(true), setIsModalOpened(true) }
+    completeTask: id => setTaskList(taskList.map(task => {
+      if (task.id = id) {
+        return { ...task, completed: !task.completed }
+      }
+      return task
+    })),
+    openModalForEdit: id => { setTaskForAddOrEdit(taskList.find(task => task.id === id)), setIsModalForEdit(true), setIsModalOpened(true) }
   }
 
   return (
@@ -61,17 +70,17 @@ export default function App() {
         </button>
 
         <Selector propsForSelector={propsForSelector} />
-        
+
       </div>
 
       {filterTasksBySelectedState(selectedState, taskList).map(((task, index, tasks) => {
         return <Task
           key={getRandomId()}
-          id = {task.id}
-          name = {task.name}
-          description = {task.description}
-          deadline = {task.deadline}
-          complete = {task.complete}
+          id={task.id}
+          name={task.name}
+          description={task.description}
+          deadline={task.deadline}
+          completed={task.completed}
           className={makeStyleTask(index, tasks.length - 1)}
           propsForTask={propsForTask} />
       }))}

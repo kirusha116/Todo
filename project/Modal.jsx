@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
-import './styles/Modal.css'
+import style from './styles/Modal.module.css'
+
 
 export default function Modal({ propsForModal }) {
 
@@ -18,47 +19,48 @@ export default function Modal({ propsForModal }) {
     }, [isModalOpened])
 
     return (
-        <div className={isModalOpened ? "modal modal_active" : "modal"} onClick={() => setIsModalOpened(false)}>
+        <div className={isModalOpened ? style.modal + ' ' + style.modal_active : style.modal} onClick={() => setIsModalOpened(false)}>
 
-            <div className={isModalOpened ? "modal__window modal__window_active" : "modal__window"} onClick={e => e.stopPropagation()}>
+            <div className={isModalOpened ? style.window + ' ' + style.window_active : style.window} onClick={e => e.stopPropagation()}>
 
                 <input type="text"
-                    className="modal__name"
+                    className={style.name}
                     placeholder="Name"
                     value={name}
                     onChange={e => setName(e.target.value)}
                 />
 
-                <textarea className="modal__textarea"
+                <textarea className={style.textarea}
                     placeholder="Description"
                     value={description}
                     onChange={e => setDescription(e.target.value)}
                 />
 
-                <div className='modal__buttons'>
+                <div className={style.buttons}>
 
                     <input type="datetime-local"
-                        className="modal__date"
+                        className={style.date}
                         value={deadline}
                         onChange={e => setDeadline(e.target.value)}
                     />
 
-                    <div className="modal__space"></div>
+                    <div className={style.space}></div>
 
                     <button type="button"
-                        className='button modal__add'
-                        onClick={() => { 
+                        className={'button' + ' ' + style.add}
+                        onClick={() => {
                             if (isModalForEdit) {
                                 replaceTaskInTaskList(name, description, deadline)
                             } else {
                                 addNewTask(name, description, deadline)
                             }
-                            setIsModalOpened(false) }}
+                            setIsModalOpened(false)
+                        }}
                     >{isModalForEdit ? 'Edit task' : 'Add Task'}
                     </button>
 
                     <button type="button"
-                        className='button modal__close'
+                        className={'button' + ' ' + style.close}
                         onClick={() => setIsModalOpened(false)}
                     >Close
                     </button>

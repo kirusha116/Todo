@@ -36,7 +36,7 @@
   text-wrap: wrap;
 }
 
-.task__description {
+.description {
   width: calc(100% - var(--paddings-in-tasklist) * 2);
   height: var(--height-of-task-description);
   border-radius: 10px;
@@ -46,7 +46,7 @@
   padding: 0 30px 20px 30px;
 }
 
-.task__description::before {
+.description::before {
   display: block;
   height: 20px;
   width: 99%;
@@ -56,7 +56,7 @@
   margin-bottom: 20px;
 }
 
-.task__wrapper {
+.wrapper {
   width: calc(100% - var(--paddings-in-tasklist) * 2);
   height: var(--height-of-task-wrapper);
   border-radius: 10px;
@@ -68,11 +68,11 @@
   padding-right: 10px;
 }
 
-.task__wrapper>* {
+.wrapper>* {
   margin-right: 10px;
 }
 
-.task__square {
+.square {
   width: 40px;
   aspect-ratio: 1;
   background-color: rgb(230, 230, 240);
@@ -83,17 +83,17 @@
   cursor: pointer;
 }
 
-.task__text {
+.text {
   flex-grow: 1;
   cursor: pointer;
 }
 
-.task__text-subject {
+.subject {
   font-size: 1.4em;
   line-height: 1em;
 }
 
-.task__text-deadline {
+.deadline {
   font-size: 0.8em;
   line-height: 0.8em;
 }
