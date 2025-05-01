@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-import Selector from './Selector'
-import Task from './Task'
-import Modal from './Modal'
-import loadTaskListFromStorageOrCreateNewEmptyTaskList from './functions/loadTaskListFromStorageOrCreateNewEmptyTaskList'
-import makeStyleTask from './functions/makeTaskStyle'
-import filterTasksBySelectedState from './functions/filterTasksBySelectedState'
-import createNewTaskObj from './functions/createNewTaskObj'
-import getRandomId from './functions/getRandomId'
+import Selector from './components/Selector'
+import Task from './components/Task/Task'
+import Modal from './components/Modal/Modal'
+import loadTaskListFromStorageOrCreateNewEmptyTaskList from './utils/loadTaskListFromStorageOrCreateNewEmptyTaskList'
+import makeStyleTask from './utils/makeTaskStyle'
+import filterTasksBySelectedState from './utils/filterTasksBySelectedState'
+import createNewTaskObj from './utils/createNewTaskObj'
+import getRandomId from './utils/getRandomId'
 
 export default function App() {
 

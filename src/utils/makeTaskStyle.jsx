@@ -1,4 +1,4 @@
-import style from '../styles/Task.module.css'
+import style from '../components/Task/Task.module.css'
 
 export default function makeStyleTask(index, lastIndex) {
     let className = style.task

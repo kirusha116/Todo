@@ -1,9 +1,9 @@
-import tick from './image/Tick.svg'
-import trash from './image/Trash.svg'
-import pencil from './image/Pencil.svg'
-import formatDateForTextBlock from './functions/formatDateForTextBlock'
+import tick from '../../images/Tick.svg'
+import trash from '../../images/Trash.svg'
+import pencil from '../../images/Pencil.svg'
+import formatDateForTextBlock from '../../utils/formatDateForTextBlock'
 import { useState } from 'react'
-import style from './styles/Task.module.css'
+import style from './Task.module.css'
 
 export default function Task({ id, name, description, deadline, completed, className, propsForTask }) {
 
