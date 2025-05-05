@@ -1,23 +1,21 @@
 
-export default function Selector({ propsForSelector }) {
-
-    const { selectedState, setSelectedState } = propsForSelector
-
-    const states = {
-        ALL: 'All',
-        CURRENT: 'Current',
-        COMPLETED: 'Completed',
-    }
+export function Selector({
+    selectedState,
+    selectState,
+    options,
+}) {
 
     return (
-        <select className={'nav__select'} value={selectedState} onChange={(e) => {
-            setSelectedState(e.target.value)
-        }}>
-            {Object.entries(states).map(([key, value]) => <option
-                key={key}
-                value={key}
-            >{value}
-            </option>)}
+        <select className={'nav__select'} value={selectedState} onChange={(e) => { selectState(e.target.value) }}>
+            {options.map(({ state, label }) => {                
+                return (
+                    <option
+                        key={state}
+                        value={state}
+                    >{label}
+                    </option>
+                )
+            })}
         </select>
     )
 }

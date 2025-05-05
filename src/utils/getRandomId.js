@@ -1,4 +1,4 @@
-export default function getRandomId() {
+export function getRandomId() {
 
 	let chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 

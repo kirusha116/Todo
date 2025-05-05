@@ -1,91 +1,120 @@
-import { useEffect, useState } from 'react'
 import './App.css'
-import Selector from './components/Selector'
-import Task from './components/Task/Task'
-import Modal from './components/Modal/Modal'
-import loadTaskListFromStorageOrCreateNewEmptyTaskList from './utils/loadTaskListFromStorageOrCreateNewEmptyTaskList'
-import makeStyleTask from './utils/makeTaskStyle'
-import filterTasksBySelectedState from './utils/filterTasksBySelectedState'
-import createNewTaskObj from './utils/createNewTaskObj'
-import getRandomId from './utils/getRandomId'
+import { useState } from 'react'
+import { Selector } from './components/Selector'
+import { Task } from './components/Task/Task'
+import { Modal } from './components/Modal/Modal'
+import { makeStyleTask } from './utils/makeTaskStyle'
+import { getRandomId } from './utils/getRandomId'
+import { initTaskList } from './api/initTaskList'
+import { saveTaskList } from './api/saveTaskList'
+import { formatDateForInput } from './utils/formatDateForInput'
+import { TaskListOptions } from './constants/TaskListOptions'
+import { TransitionGroup } from 'react-transition-group'
+
 
 export default function App() {
 
   // delete localStorage.todo
 
-  const [taskList, setTaskList] = useState(loadTaskListFromStorageOrCreateNewEmptyTaskList())
+  const [taskList, setTaskList] = useState(initTaskList())
   const [selectedState, setSelectedState] = useState('ALL')
   const [isModalOpened, setIsModalOpened] = useState(false)
   const [isModalForEdit, setIsModalForEdit] = useState(false)
-  const [taskForAddOrEdit, setTaskForAddOrEdit] = useState({})
-
-  useEffect(() => { localStorage.todo = JSON.stringify(taskList) }, [taskList])
-
-  const propsForSelector = {
-    selectedState,
-    setSelectedState,
-  }
-
-  const propsForModal = {
-    isModalOpened,
-    setIsModalOpened,
-    isModalForEdit,
-    replaceTaskInTaskList: (name, description, deadline) => setTaskList(taskList.map(task => {
-      if (task.id === taskForAddOrEdit.id) {
-        return { ...task, name, description, deadline }
-      }
-      return task
-    })),
-    addNewTask: (name, description, deadline) => setTaskList([...taskList, createNewTaskObj(name, description, deadline)]),
-    nameForEdit: taskForAddOrEdit.name,
-    descriptionForEdit: taskForAddOrEdit.description,
-    deadlineForEdit: taskForAddOrEdit.deadline,
-  }
-
-
-
-  const propsForTask = {
-    deleteTask: id => setTaskList(taskList.filter(task => task.id !== id)),
-    completeTask: id => setTaskList(taskList.map(task => {
-      if (task.id = id) {
-        return { ...task, completed: !task.completed }
-      }
-      return task
-    })),
-    openModalForEdit: id => { setTaskForAddOrEdit(taskList.find(task => task.id === id)), setIsModalForEdit(true), setIsModalOpened(true) }
-  }
+  const [taskForEdit, setTaskForEdit] = useState({})
+  const [taskVisibleFunc, setTaskVisibleFunc] = useState({})
 
   return (
     <>
       <header className='header'>TODO LIST</header>
 
-      <div className="nav">
+      <nav className="nav">
 
-        <button className="button nav__button" onClick={() => {
-          setTaskForAddOrEdit(createNewTaskObj())
-          setIsModalForEdit(false)
-          setIsModalOpened(true)
-        }}
-        >Add Task
-        </button>
+        <button className="button nav__button" onClick={() => { setIsModalForEdit(false), setIsModalOpened(true) }}>Add Task</button>
 
-        <Selector propsForSelector={propsForSelector} />
+        <Selector
+          selectedState={selectedState}
+          selectState={(state) => setSelectedState(state)}
+          options={TaskListOptions}
+        />
 
-      </div>
+      </nav>
 
-      {filterTasksBySelectedState(selectedState, taskList).map(((task, index, tasks) => {
-        return <Task
-          key={getRandomId()}
-          id={task.id}
-          name={task.name}
-          description={task.description}
-          deadline={task.deadline}
-          completed={task.completed}
-          className={makeStyleTask(index, tasks.length - 1)}
-          propsForTask={propsForTask} />
-      }))}
 
-      <Modal propsForModal={propsForModal} />
+      <TransitionGroup mode={'in-out'} component={null}>
+
+        {/* Отрисовка списка задач */}
+        {taskList.map(((task, index, tasks) => {
+          return <Task
+            key={task.id}
+            title={task.title}
+            description={task.description}
+            deadline={task.deadline}
+            completed={task.completed}
+            className={makeStyleTask(index, tasks.length - 1)}
+            completeTask={() => {
+              const newTaskList = taskList.map(existTask => {
+                if (existTask.id === task.id) { return { ...existTask, completed: !existTask.completed } }
+                return existTask
+              })
+              setTaskList(newTaskList)
+              saveTaskList(newTaskList)
+            }}
+            deleteTask={() => {
+              const newTaskList = taskList.filter(existTask => existTask.id !== task.id)
+              setTaskList(newTaskList)
+              saveTaskList(newTaskList)
+            }}
+            openModal={() => {
+              setTaskForEdit(task)
+              setIsModalForEdit(true)
+              setIsModalOpened(true)
+            }} />
+        }))}
+
+      </TransitionGroup>
+
+      <TransitionGroup mode={'out-in'} component={null}>
+
+        {/* Модалка для добавления новой задачи */}
+        {!isModalForEdit &&
+          <Modal
+            key={formatDateForInput(new Date())}
+            isOpen={isModalOpened}
+            titleInitial={""}
+            descriptionInitial={""}
+            deadlineInitial={formatDateForInput(new Date())}
+            blueButtonText='Add task'
+            onClose={() => setIsModalOpened(false)}
+            makeChanges={(title, description, deadline) => {
+              const newTaskList = [...taskList, { id: getRandomId(), title, description, deadline, completed: false }]
+              setTaskList(newTaskList)
+              saveTaskList(newTaskList)
+            }}
+          />
+        }
+
+        {/* Модалка для редактирования существующей задачи */}
+        {isModalForEdit &&
+          <Modal
+            key={taskForEdit.id}
+            isOpen={isModalOpened}
+            titleInitial={taskForEdit.title}
+            descriptionInitial={taskForEdit.description}
+            deadlineInitial={taskForEdit.deadline}
+            blueButtonText='Edit task'
+            onClose={() => setIsModalOpened(false)}
+            makeChanges={(title, description, deadline) => {
+              const newTaskList = taskList.map((task) => {
+                if (task.id === taskForEdit.id) { return { ...task, title, description, deadline } }
+                return task
+              })
+              setTaskList(newTaskList)
+              saveTaskList(newTaskList)
+            }}
+          />
+        }
+
+      </TransitionGroup>
 
     </>
   )

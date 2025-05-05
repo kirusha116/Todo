@@ -2,41 +2,61 @@ import tick from '../../images/Tick.svg'
 import trash from '../../images/Trash.svg'
 import pencil from '../../images/Pencil.svg'
 import formatDateForTextBlock from '../../utils/formatDateForTextBlock'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import style from './Task.module.css'
+import { CSSTransition } from 'react-transition-group'
 
-export default function Task({ id, name, description, deadline, completed, className, propsForTask }) {
-
-    const { deleteTask, completeTask, openModalForEdit } = propsForTask
+export function Task({
+    title,
+    description,
+    deadline,
+    completed,
+    className,
+    completeTask,
+    deleteTask,
+    openModal,
+}) {
 
     const [isDescriptionVisible, setIsDescriptionVisible] = useState(false)
+    const task = useRef(null)
 
     return (
-        <div className={isDescriptionVisible ? className + ' ' + style.with - description : className} >
 
-            <div className={style.wrapper}>
+        <CSSTransition
+            in={true}
+            nodeRef={task}
+            timeout={2000}
+            mountOnEnter
+            unmountOnExit
+        >
 
-                <div className={style.square} onClick={() => completeTask(id)}>
-                    {completed && <img src={tick} style={{ height: "27px" }} alt=""></img>}
+            <div className={isDescriptionVisible ? className + ' ' + style.withDescription : className} ref={task}>
+
+                <div className={style.wrapper}>
+
+                    <div className={style.square} onClick={completeTask}>
+                        {completed && <img src={tick} style={{ height: "27px" }} alt=""></img>}
+                    </div>
+
+                    <div className={style.text} onClick={() => setIsDescriptionVisible(!isDescriptionVisible)}>
+                        <p className={style.subject}>{title}</p>
+                        {deadline && <span className={style.deadline}>{formatDateForTextBlock(deadline)}</span>}
+                    </div>
+
+                    <div className={style.square} onClick={deleteTask}>
+                        <img src={trash} style={{ height: "24px" }} alt=""></img>
+                    </div>
+
+                    <div className={style.square} onClick={openModal} >
+                        <img src={pencil} style={{ height: "25px" }} alt=""></img>
+                    </div>
+
                 </div>
 
-                <div className={style.text} onClick={() => setIsDescriptionVisible(!isDescriptionVisible)}>
-                    <p className={style.subject}>{name}</p>
-                    <span className={style.deadline}>{formatDateForTextBlock(deadline)}</span>
-                </div>
-
-                <div className={style.square} onClick={() => deleteTask(id)}>
-                    <img src={trash} style={{ height: "24px" }} alt=""></img>
-                </div>
-
-                <div className={style.square} onClick={() => openModalForEdit(id)} >
-                    <img src={pencil} style={{ height: "25px" }} alt=""></img>
-                </div>
+                {isDescriptionVisible && <div className={style.description}>{description}</div>}
 
             </div>
 
-            {isDescriptionVisible && <div className={style.description}>{description}</div>}
-
-        </div>
+        </CSSTransition>
     )
 }

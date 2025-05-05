@@ -1,4 +1,4 @@
-export default function formatDateForInput(date) {
+export function formatDateForInput(date) {
 
     function makeStringNumber(number) {
         if (number < 10) { return '0' + number.toString() } else { return number.toString() }

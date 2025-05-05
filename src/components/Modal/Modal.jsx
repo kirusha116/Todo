@@ -1,74 +1,85 @@
-import { useEffect, useState } from "react"
+import { useRef, useState } from "react"
 import style from './Modal.module.css'
+import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
 
-export default function Modal({ propsForModal }) {
+export function Modal({
+    isOpen,
+    onClose,
+    titleInitial,
+    descriptionInitial,
+    deadlineInitial,
+    makeChanges,
+    blueButtonText,
+}) {
 
-    const { isModalOpened, setIsModalOpened, isModalForEdit, replaceTaskInTaskList, addNewTask, nameForEdit, descriptionForEdit, deadlineForEdit } = propsForModal
-
-    const [name, setName] = useState(nameForEdit)
-    const [description, setDescription] = useState(descriptionForEdit)
-    const [deadline, setDeadline] = useState(deadlineForEdit)
-
-    useEffect(() => {
-        if (isModalOpened) {
-            setName(nameForEdit)
-            setDescription(descriptionForEdit)
-            setDeadline(deadlineForEdit)
-        }
-    }, [isModalOpened])
+    const [title, setTitle] = useState(titleInitial)
+    const [description, setDescription] = useState(descriptionInitial)
+    const [deadline, setDeadline] = useState(deadlineInitial)
+    const modal = useRef(null)
 
     return (
-        <div className={isModalOpened ? style.modal + ' ' + style.modal_active : style.modal} onClick={() => setIsModalOpened(false)}>
+        <CSSTransition
+            in={isOpen}
+            nodeRef={modal}
+            timeout={200}
+            classNames={{
+                enter: style.modal_enter,
+                enterActive: style.modal_active_enter,
+                exitActive: style.modal_active_exit,
+            }}
+            mountOnEnter
+            unmountOnExit
+        >
 
-            <div className={isModalOpened ? style.window + ' ' + style.window_active : style.window} onClick={e => e.stopPropagation()}>
+            <div className={style.modal} onMouseDown={onClose} ref={modal}>
 
-                <input type="text"
-                    className={style.name}
-                    placeholder="Name"
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                />
+                <div className={style.window} onMouseDown={e => e.stopPropagation()}>
 
-                <textarea className={style.textarea}
-                    placeholder="Description"
-                    value={description}
-                    onChange={e => setDescription(e.target.value)}
-                />
-
-                <div className={style.buttons}>
-
-                    <input type="datetime-local"
-                        className={style.date}
-                        value={deadline}
-                        onChange={e => setDeadline(e.target.value)}
+                    <input type="text"
+                        className={style.title}
+                        placeholder="Title"
+                        value={title}
+                        onChange={e => setTitle(e.target.value)}
                     />
 
-                    <div className={style.space}></div>
+                    <textarea className={style.textarea}
+                        placeholder="Description"
+                        value={description}
+                        onChange={e => setDescription(e.target.value)}
+                    />
 
-                    <button type="button"
-                        className={'button' + ' ' + style.add}
-                        onClick={() => {
-                            if (isModalForEdit) {
-                                replaceTaskInTaskList(name, description, deadline)
-                            } else {
-                                addNewTask(name, description, deadline)
-                            }
-                            setIsModalOpened(false)
-                        }}
-                    >{isModalForEdit ? 'Edit task' : 'Add Task'}
-                    </button>
+                    <div className={style.buttons}>
 
-                    <button type="button"
-                        className={'button' + ' ' + style.close}
-                        onClick={() => setIsModalOpened(false)}
-                    >Close
-                    </button>
+                        <input type="datetime-local"
+                            className={style.date}
+                            value={deadline}
+                            onChange={e => setDeadline(e.target.value)}
+                        />
+
+                        <div className={style.space}></div>
+
+                        <button type="button"
+                            className={'button' + ' ' + style.add}
+                            onClick={() => {
+                                makeChanges(title, description, deadline)
+                                onClose()
+                            }}
+                        >{blueButtonText}
+                        </button>
+
+                        <button type="button"
+                            className={'button' + ' ' + style.close}
+                            onClick={onClose}
+                        >Close
+                        </button>
+
+                    </div>
 
                 </div>
 
             </div>
 
-        </div>
+        </CSSTransition>
     )
 }
