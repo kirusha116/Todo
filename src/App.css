@@ -9,11 +9,6 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  --height-of-header: 80px;
-  --paddings-in-tasklist: 20px;
-  --height-of-task-wrapper: 100px;
-  --height-of-task-description: 120px;
 }
 
 * {
@@ -50,8 +45,8 @@ p {
 .header {
   width: 95%;
   max-width: 1280px;
-  height: var(--height-of-header);
-  line-height: var(--height-of-header);
+  height: 80px;
+  line-height: 80px;
   text-align: center;
   font-size: 2em;
 }
@@ -75,4 +70,21 @@ p {
   border-radius: 10px;
   background-color: rgb(211, 211, 230);
   padding-inline: 10px;
+}
+
+.taskList {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  height: auto;
+  width: 95%;
+  max-width: 1280px;
+  margin-block: 26px;
+  border-radius: 10px;
+  padding-block: 10px;
+
+  background-color: rgb(230, 230, 240);
+
+  transition: 400ms;
 }

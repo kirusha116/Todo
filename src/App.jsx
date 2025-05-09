@@ -3,12 +3,11 @@ import { useState } from 'react'
 import { Selector } from './components/Selector'
 import { Task } from './components/Task/Task'
 import { Modal } from './components/Modal/Modal'
-import { makeStyleTask } from './utils/makeTaskStyle'
 import { getRandomId } from './utils/getRandomId'
 import { initTaskList } from './api/initTaskList'
 import { saveTaskList } from './api/saveTaskList'
 import { formatDateForInput } from './utils/formatDateForInput'
-import { TaskListOptions } from './constants/TaskListOptions'
+import { TaskListOptions, FilterFuncs } from './constants/Options'
 import { TransitionGroup } from 'react-transition-group'
 
 
@@ -21,7 +20,7 @@ export default function App() {
   const [isModalOpened, setIsModalOpened] = useState(false)
   const [isModalForEdit, setIsModalForEdit] = useState(false)
   const [taskForEdit, setTaskForEdit] = useState({})
-  const [taskVisibleFunc, setTaskVisibleFunc] = useState({})
+  const [filterFunc, setFilterFunc] = useState(() => () => { return true })
 
   return (
     <>
@@ -35,22 +34,22 @@ export default function App() {
           selectedState={selectedState}
           selectState={(state) => setSelectedState(state)}
           options={TaskListOptions}
+          FilterFuncs={FilterFuncs}
+          setFilterFunc={setFilterFunc}
         />
 
       </nav>
 
-
-      <TransitionGroup mode={'in-out'} component={null}>
-
-        {/* Отрисовка списка задач */}
-        {taskList.map(((task, index, tasks) => {
+      {/* Отрисовка списка задач */}
+      <TransitionGroup component={'div'} className={'taskList'} style={{ paddingBlock: !Boolean(taskList.length) && '0px' }}>
+        {taskList.map(task => {
           return <Task
+            initVisible={filterFunc(task.completed)}
             key={task.id}
             title={task.title}
             description={task.description}
             deadline={task.deadline}
             completed={task.completed}
-            className={makeStyleTask(index, tasks.length - 1)}
             completeTask={() => {
               const newTaskList = taskList.map(existTask => {
                 if (existTask.id === task.id) { return { ...existTask, completed: !existTask.completed } }
@@ -69,17 +68,17 @@ export default function App() {
               setIsModalForEdit(true)
               setIsModalOpened(true)
             }} />
-        }))}
-
+        })}
       </TransitionGroup>
 
-      <TransitionGroup mode={'out-in'} component={null}>
 
+      {/* Модалки */}
+      <TransitionGroup component={null}>
         {/* Модалка для добавления новой задачи */}
         {!isModalForEdit &&
           <Modal
-            key={formatDateForInput(new Date())}
-            isOpen={isModalOpened}
+            key={Date.now()}
+            isModalOpened={isModalOpened}
             titleInitial={""}
             descriptionInitial={""}
             deadlineInitial={formatDateForInput(new Date())}
@@ -97,7 +96,7 @@ export default function App() {
         {isModalForEdit &&
           <Modal
             key={taskForEdit.id}
-            isOpen={isModalOpened}
+            isModalOpened={isModalOpened}
             titleInitial={taskForEdit.title}
             descriptionInitial={taskForEdit.description}
             deadlineInitial={taskForEdit.deadline}

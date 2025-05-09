@@ -1,10 +1,10 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import style from './Modal.module.css'
-import { CSSTransition, TransitionGroup } from 'react-transition-group'
+import { CSSTransition } from 'react-transition-group'
 
 
 export function Modal({
-    isOpen,
+    isModalOpened,
     onClose,
     titleInitial,
     descriptionInitial,
@@ -13,10 +13,13 @@ export function Modal({
     blueButtonText,
 }) {
 
+    const [isOpen, setIsOpen] = useState(isModalOpened)
+    useEffect(() => setIsOpen(isModalOpened), [isModalOpened])
     const [title, setTitle] = useState(titleInitial)
     const [description, setDescription] = useState(descriptionInitial)
     const [deadline, setDeadline] = useState(deadlineInitial)
     const modal = useRef(null)
+
 
     return (
         <CSSTransition
@@ -32,7 +35,10 @@ export function Modal({
             unmountOnExit
         >
 
-            <div className={style.modal} onMouseDown={onClose} ref={modal}>
+            <div className={style.modal} ref={modal} onMouseDown={() => {
+                setIsOpen(false)
+                onClose()
+            }} >
 
                 <div className={style.window} onMouseDown={e => e.stopPropagation()}>
 
@@ -63,6 +69,7 @@ export function Modal({
                             className={'button' + ' ' + style.add}
                             onClick={() => {
                                 makeChanges(title, description, deadline)
+                                setIsOpen(false)
                                 onClose()
                             }}
                         >{blueButtonText}
@@ -70,7 +77,10 @@ export function Modal({
 
                         <button type="button"
                             className={'button' + ' ' + style.close}
-                            onClick={onClose}
+                            onClick={() => {
+                                setIsOpen(false)
+                                onClose()
+                            }}
                         >Close
                         </button>
 
