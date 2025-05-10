@@ -9,6 +9,7 @@ import { saveTaskList } from './api/saveTaskList'
 import { formatDateForInput } from './utils/formatDateForInput'
 import { TaskListOptions, FilterFuncs } from './constants/Options'
 import { TransitionGroup } from 'react-transition-group'
+import { isTaskListEmpty } from './utils/isTaskListEmpty'
 
 
 export default function App() {
@@ -41,7 +42,7 @@ export default function App() {
       </nav>
 
       {/* Отрисовка списка задач */}
-      <TransitionGroup component={'div'} className={'taskList'} style={{ paddingBlock: !Boolean(taskList.length) && '0px' }}>
+      <TransitionGroup component={'div'} className={'taskList'}>
         {taskList.map(task => {
           return <Task
             initVisible={filterFunc(task.completed)}

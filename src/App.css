@@ -88,3 +88,8 @@ p {
 
   transition: 400ms;
 }
+
+.taskList:empty {
+  transition: 1ms;
+  padding-block: 0px;
+}
