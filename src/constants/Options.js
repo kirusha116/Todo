@@ -10,8 +10,8 @@ export const TaskListOptions = [
     { state: States.COMPLETED, label: "Completed"},
 ];
 
-export const FilterFuncs = {
-    'ALL': () => { return true },
-    'CURRENT': (completed) => { return !completed },
-    'COMPLETED': (completed) => { return completed },
+export const filterFuncs = {
+    [States.ALL]: () => { return true },
+    [States.CURRENT]: (completed) => { return !completed },
+    [States.COMPLETED]: (completed) => { return completed },
 }
